@@ -1,7 +1,13 @@
 package com.effectiv.crm.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+
+import com.effectiv.crm.web.SearchCriteria;
+import com.effectiv.crm.web.SearchRequest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,6 +15,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 @Slf4j
 public class SimpleBaseRepository<T, ID extends Serializable> extends SimpleJpaRepository<T, ID>
@@ -24,19 +34,55 @@ public class SimpleBaseRepository<T, ID extends Serializable> extends SimpleJpaR
 	}
 
 	
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public List<T> findAllByDeleted(boolean deleted) {
+	public Page<T> findAll(SearchRequest searchRequest, Pageable pageable) {
 		
-		log.info("Deleted : {}", deleted);
+		log.info("Deleted : {}", false);
 		log.info("Entity name : {}", entityInformation.getEntityName());
 		
-		return entityManager.createQuery("SELECT t from " + entityInformation.getEntityName() + " t where t.deleted =:deleted")
-				.setParameter("deleted", deleted)
-				.getResultList();
-
+		
+		
+		List<T> content =  search(searchRequest,pageable);
+				
+				/*entityManager.createQuery("SELECT t from " + entityInformation.getEntityName() + " t where t.deleted =:deleted")
+				.setParameter("deleted", Boolean.FALSE)
+				.getResultList();*/
+		
+		return new PageImpl<>(content);
 	}
 	
+	protected List<T> search(SearchRequest searchRequest, Pageable pageable) {
+		
+		Class<T> clazz = entityInformation.getJavaType();
+		
+		log.info("Entity clazz : {}", clazz);
+		
+		final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		
+        final CriteriaQuery<T> query = builder.createQuery(clazz);
+        final Root<T> r = query.from(clazz);
+
+        Predicate predicate = builder.conjunction();
+
+        for (final SearchCriteria param : searchRequest.getCriterias()) {
+            if (param.getOperation().equalsIgnoreCase(">")) {
+                predicate = builder.and(predicate, builder.greaterThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
+            } else if (param.getOperation().equalsIgnoreCase("<")) {
+                predicate = builder.and(predicate, builder.lessThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
+            } else if (param.getOperation().equalsIgnoreCase(":")) {
+                if (r.get(param.getKey()).getJavaType() == String.class) {
+                    predicate = builder.and(predicate, builder.like(r.get(param.getKey()), "%" + param.getValue() + "%"));
+                } else {
+                    predicate = builder.and(predicate, builder.equal(r.get(param.getKey()), param.getValue()));
+                }
+            }
+        }
+        query.where(predicate);
+
+        final List<T> result = entityManager.createQuery(query).getResultList();
+        return result;
+	}
 
 
 }

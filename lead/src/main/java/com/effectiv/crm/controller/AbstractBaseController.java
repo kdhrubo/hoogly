@@ -1,17 +1,19 @@
 package com.effectiv.crm.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.effectiv.crm.business.AbstractBaseBusinessDelegate;
 import com.effectiv.crm.domain.BaseEntity;
+import com.effectiv.crm.web.SearchParams;
+import com.effectiv.crm.web.SearchRequest;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -24,23 +26,34 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	public AbstractBaseController(AbstractBaseBusinessDelegate<T, Id> service) {
 		this.service = service;
 	}
-
+	
+	@GetMapping("/hb")
+	@ResponseStatus(value = HttpStatus.OK)
+	@ResponseBody
+	public boolean heartBeat() {
+		return true;
+	}
+	
+	
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@ResponseBody
-	public T save(@RequestBody @Valid T t) {
+	public T create(@RequestBody @Valid T t) {
 		log.info("Entity submitform - {}", t);
 		return service.save(t);
 	}
-
-	@GetMapping("/")
+	
+	
+	@GetMapping()
 	@ResponseStatus(value = HttpStatus.FOUND)
 	@ResponseBody
-	public List<T> findAll(@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-			@RequestParam(value = "pageNo", defaultValue = "0") int pageNo, @RequestParam("deleted") boolean deleted) {
+	public Page<T> findAll(@SearchParams SearchRequest searchRequest, Pageable pageable) {
 
-		// TODO - Use pageSize, pageNo
-		return service.findAllByDeleted(deleted);
+		log.info("pageable.pageNumber -> {}" , pageable.getPageNumber());
+		log.info("pageable.pageSize -> {}" , pageable.getPageSize());
+		log.info("pageable.sort -> {}" , pageable.getSort());
+		
+		return service.findAll(searchRequest, pageable);
 	}
 
 	@GetMapping("/{id}")

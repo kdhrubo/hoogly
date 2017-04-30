@@ -1,13 +1,14 @@
 package com.effectiv.crm.business;
 
 import java.io.Serializable;
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.effectiv.crm.domain.BaseEntity;
 import com.effectiv.crm.exception.BusinessException;
 import com.effectiv.crm.repository.BaseRepository;
+import com.effectiv.crm.web.SearchRequest;
 
 import jodd.bean.BeanUtil;
 import lombok.Getter;
@@ -28,16 +29,11 @@ public abstract class AbstractBaseBusinessDelegate<T extends BaseEntity, Id exte
 	}
 
 	@Transactional(readOnly = true)
-	public List<T> findAll() {
-		return repository.findAll();
+	public Page<T> findAll(SearchRequest searchRequest, Pageable pageable) {
+		return repository.findAll(searchRequest, pageable);
 	}
 
-	@Transactional(readOnly = true)
-	public List<T> findAllByDeleted(boolean deleted) {
-		log.info("## repository - {}", repository.getClass().getSimpleName());
-
-		return repository.findAllByDeleted(deleted);
-	}
+	
 
 	@Transactional
 	public T save(T t) {
@@ -82,8 +78,6 @@ public abstract class AbstractBaseBusinessDelegate<T extends BaseEntity, Id exte
 		}
 
 	}
-
-	
 
 	@Transactional
 	public void restore(Id id) {

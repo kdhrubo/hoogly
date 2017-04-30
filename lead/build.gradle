@@ -10,6 +10,10 @@ buildscript {
 	}
 }
 
+plugins {
+	id "org.asciidoctor.convert" version "1.5.3"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
@@ -21,17 +25,37 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+ext['spring-restdocs.version'] = '1.2.0.RELEASE'
+
+
+test {
+	outputs.dir snippetsDir
+}
+
+asciidoctor {
+	attributes 'snippets': snippetsDir
+	inputs.dir snippetsDir
+	dependsOn test
+}
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('org.springframework.boot:spring-boot-actuator-docs')
+	compile('org.springframework.boot:spring-boot-starter-cache')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('mysql:mysql-connector-java')
+	compile("com.h2database:h2")
 	runtime('joda-time:joda-time')
 	
 	compile group: 'org.jodd', name: 'jodd-bean', version: '3.8.5'
 	compile group: 'org.jodd', name: 'jodd-core', version: '3.8.5'
+	
 	
 	
 	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
@@ -39,5 +63,12 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
 	
-	compile("com.h2database:h2")
+	
+}
+
+jar {
+	dependsOn asciidoctor
+	from ("${asciidoctor.outputDir}/html5") {
+		into 'static/docs'
+	}
 }
