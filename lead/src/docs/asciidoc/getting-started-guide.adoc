@@ -47,7 +47,7 @@ This request should yield the following response:
 include::{snippets}/cheak-lead-heartbeat/http-response.adoc[]
 
 [getting-started-creating-a-lead]
-== Creating a Lead
+== Create a Lead
 Now that you've started the service and verified that it works, the next step is to use
 it to create a new lead. To create a lead you need to execute a `POST` request to this URI, including a JSON
 payload containing the atleast the first name and last name of the lead:
@@ -82,11 +82,35 @@ The lead is retrieved and then returned from the datastore as shown in the respo
 include::{snippets}/find-one-lead/http-response.adoc[]
 
 
+== Delete Lead
+
+A lead can be deleted by sending a `DELETE` request. The record is not removed from the data store, instead the status is changed. In other words, this is only a
+soft delete. The resulting data in the recyle bin can be retried with find leads API (above) with search criteria set to 'deleted:true' 
+
+include::{snippets}/delete-one-lead/curl-request.adoc[]
+
+This will return a list of leads if found in the data store. 
+
+include::{snippets}/delete-one-lead/http-response.adoc[]
 
 
+== Purge Lead
 
+A lead can be purged by sending a `DELETE` request with purge request parameter set to true. The record is removed from the data store. In other words, this is a hard delete. 
 
+include::{snippets}/purge-lead/curl-request.adoc[]
 
+This will return a list of leads if found in the data store. 
 
+include::{snippets}/purge-lead/http-response.adoc[]
 
+== Restore Lead
+
+A lead can be restored by sending a `PUT` request with restore request with the lead id. The soft deleted record is restored and is available again in find all request. 
+
+include::{snippets}/restore-lead/curl-request.adoc[]
+
+This will return a list of leads if found in the data store. 
+
+include::{snippets}/restore-lead/http-response.adoc[]
 

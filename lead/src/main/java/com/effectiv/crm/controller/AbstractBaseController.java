@@ -65,28 +65,21 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	
 	
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable("id") Id id) {
-		service.delete(id);
-	}
-
-	@DeleteMapping("/deleteall")
 	@ResponseStatus(value = HttpStatus.OK)
-	@ResponseBody
-	public void delete(@RequestParam(value = "id") Id[] id) {
-		service.deleteAll(id);
+	public void delete(@PathVariable("id") Id id, @RequestParam(value="purge", defaultValue="false") boolean purge) {
+		if(purge){
+			service.purge(id);
+		}
+		else{
+			service.delete(id);
+		}
 	}
 
-	@DeleteMapping("/{id}/purge")
-	@ResponseStatus(value = HttpStatus.OK)
-	@ResponseBody
-	public void purge(@PathVariable("id") Id id) {
-		service.purge(id);
-	}
-
-	@RequestMapping("/{id}/restore")
+	@PutMapping("/{id}/restore")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
 	public void restore(@PathVariable("id") Id id) {
+		log.info("==== restore entity called ====");
 		service.restore(id);
 	}
 

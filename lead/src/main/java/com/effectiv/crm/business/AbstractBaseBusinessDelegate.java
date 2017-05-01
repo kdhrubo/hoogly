@@ -70,16 +70,6 @@ public abstract class AbstractBaseBusinessDelegate<T extends BaseEntity, Id exte
 	
 
 	@Transactional
-	public void deleteAll(Id[] ids) {
-		// Since we are getting unique id of the entity we do not require to use
-		// the parent id here.
-		for (Id id : ids) {
-			delete(id);
-		}
-
-	}
-
-	@Transactional
 	public void restore(Id id) {
 
 		T t = findOne(id);

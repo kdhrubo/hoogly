@@ -1,12 +1,17 @@
 package com.effectiv.crm.controller;
 
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
-
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -40,7 +45,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 @WebMvcTest(value = LeadController.class, secure = false)
 @AutoConfigureRestDocs("build/generated-snippets")
 
-public class LeadControllerTests extends AbstractControllerTests{
+public class LeadControllerTests extends AbstractControllerTests<Lead,String>{
 
 	@MockBean
 	private LeadBusinessDelegate leadBusinessDelegate;
@@ -185,6 +190,61 @@ public class LeadControllerTests extends AbstractControllerTests{
 		
 		// verify
 		verify(leadBusinessDelegate, times(1)).findOne("1");
+		verifyNoMoreInteractions(leadBusinessDelegate);
+		
+	}
+	
+	@Test
+	public void testDelete() throws Exception {
+		
+		// mock
+		doNothing().when(leadBusinessDelegate).delete(anyString());
+		
+		mockMvc.perform(delete(BASE_URL + "/{id}","1")
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(status().isOk())
+		.andDo(print())
+		.andDo(document("delete-one-lead"));
+		
+		// verify
+		verify(leadBusinessDelegate, times(1)).delete("1");
+		verifyNoMoreInteractions(leadBusinessDelegate);
+		
+	}
+	
+	@Test
+	public void testPurge() throws Exception {
+		
+		// mock
+		doNothing().when(leadBusinessDelegate).purge(anyString());
+		
+		mockMvc.perform(delete(BASE_URL + "/{id}","1")
+				.param("purge", "true")
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(status().isOk())
+		.andDo(print())
+		.andDo(document("purge-lead"));
+		
+		// verify
+		verify(leadBusinessDelegate, times(1)).purge("1");
+		verifyNoMoreInteractions(leadBusinessDelegate);
+		
+	}
+	
+	@Test
+	public void testRestore() throws Exception {
+		
+		// mock
+		doNothing().when(leadBusinessDelegate).restore(anyString());
+		
+		mockMvc.perform(put(BASE_URL + "/{id}/restore","1")
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+		.andExpect(status().isOk())
+		.andDo(print())
+		.andDo(document("restore-lead"));
+		
+		// verify
+		verify(leadBusinessDelegate, times(1)).restore("1");
 		verifyNoMoreInteractions(leadBusinessDelegate);
 		
 	}

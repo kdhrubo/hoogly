@@ -3,6 +3,7 @@ package com.effectiv.crm.controller;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.effectiv.crm.domain.BaseEntity;
 
-public abstract class AbstractControllerTests {
+
+public abstract class AbstractControllerTests<T extends BaseEntity, Id extends Serializable> {
 	
 	@Autowired
 	protected MockMvc mockMvc;
