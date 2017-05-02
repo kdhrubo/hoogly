@@ -1,0 +1,116 @@
+= Lead - Getting Started Guide
+Dhrubo Kayal;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[introduction]
+= Introduction
+
+This document describes the APIs for the Lead module. A lead is an organization or individual who might be interested
+in buying the product sold by a company. 
+
+[getting-started]
+= Getting started
+
+[getting-started-running-the-service]
+== Running the service
+Lead APIs are written using http://projects.spring.io/spring-boot[Spring Boot] which
+makes it easy to get it up and running so that you can start exploring the REST API.
+
+The first step is to clone the Git repository:
+
+[source,bash]
+----
+$ git clone https://github.com/kdhrubo/hoogly.git
+----
+
+Once the clone is complete, you're ready to get the service up and running:
+
+[source,bash]
+----
+$ cd git/hoogly/lead
+$ ./gradlew build
+$ java -jar build/libs/*.jar
+----
+
+You can check that the service is up and running by executing a simple request using
+cURL:
+
+include::{snippets}/cheak-lead-heartbeat/curl-request.adoc[]
+
+This request should yield the following response:
+
+include::{snippets}/cheak-lead-heartbeat/http-response.adoc[]
+
+[getting-started-creating-a-lead]
+== Create a Lead
+Now that you've started the service and verified that it works, the next step is to use
+it to create a new lead. To create a lead you need to execute a `POST` request to this URI, including a JSON
+payload containing the atleast the first name and last name of the lead:
+
+include::{snippets}/create-lead/curl-request.adoc[]
+
+The response from this request should have a status code of `201 Created` and the saved payload:
+
+include::{snippets}/create-lead/http-response.adoc[]
+
+[getting-started-find-leads]
+== Find Leads
+A set of leads can be found by sending a `GET` request. This API is capable of handling search criteria, sorting and paging. For more details check the API guide. 
+
+include::{snippets}/find-all-lead/curl-request.adoc[]
+
+This will return a list of leads if found in the data store. 
+
+include::{snippets}/find-all-lead/http-response.adoc[]
+
+
+[getting-started-find-lead]
+== Find Unique Lead
+A lead can be located in the data store by its primary key.
+
+The `GET` request below is used to retrieve a lead by its unique key.
+
+include::{snippets}/find-one-lead/curl-request.adoc[]
+
+The lead is retrieved and then returned from the datastore as shown in the response below.
+
+include::{snippets}/find-one-lead/http-response.adoc[]
+
+
+== Delete Lead
+
+A lead can be deleted by sending a `DELETE` request. The record is not removed from the data store, instead the status is changed. In other words, this is only a
+soft delete. The resulting data in the recyle bin can be retried with find leads API (above) with search criteria set to 'deleted:true' 
+
+include::{snippets}/delete-one-lead/curl-request.adoc[]
+
+This will return a list of leads if found in the data store. 
+
+include::{snippets}/delete-one-lead/http-response.adoc[]
+
+
+== Purge Lead
+
+A lead can be purged by sending a `DELETE` request with purge request parameter set to true. The record is removed from the data store. In other words, this is a hard delete. 
+
+include::{snippets}/purge-lead/curl-request.adoc[]
+
+This will return a list of leads if found in the data store. 
+
+include::{snippets}/purge-lead/http-response.adoc[]
+
+== Restore Lead
+
+A lead can be restored by sending a `PUT` request with restore request with the lead id. The soft deleted record is restored and is available again in find all request. 
+
+include::{snippets}/restore-lead/curl-request.adoc[]
+
+This will return a list of leads if found in the data store. 
+
+include::{snippets}/restore-lead/http-response.adoc[]
+
