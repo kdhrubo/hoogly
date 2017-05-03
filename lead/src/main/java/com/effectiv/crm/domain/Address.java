@@ -2,7 +2,9 @@ package com.effectiv.crm.domain;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Embeddable
 public class Address {
 	@Column(name="STREET", nullable=true)

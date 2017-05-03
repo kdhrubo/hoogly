@@ -22,11 +22,20 @@ public class Product extends BaseEntity{
 	@Column(name="PRODUCT_CODE", nullable=true)
 	private String productCode;
 	
+	@Column(name="PART_NUMBER", nullable=true)
+	private String partNumber;
+	
 	@Column(name="ACTIVE", nullable=true)
 	private boolean active;
 	
 	@Column(name="VENDOR_ID", nullable=true)
 	private String vendorId;
+	
+	@Column(name="PRODUCT_TYPE_ID", nullable=true)
+	private String productTypeId;
+	
+	@Column(name="CURRENCY_ID", nullable=true)
+	private String currencyId;
 	
 	@Column(name="PRODUCT_CATEGORY_ID", nullable=true)
 	private String productCategory;
@@ -77,6 +86,14 @@ public class Product extends BaseEntity{
 
 	@Column(name="DESCRIPTION", nullable=true)
 	private String description;
+	
+	@Column(name="PRODUCT_URL", nullable=true)
+	private String productUrl;
+	
+	//Product images
+	
+	@Column(name="ASSIGNED_USER_ID")
+	private String assignedUserId;
 
 
 }

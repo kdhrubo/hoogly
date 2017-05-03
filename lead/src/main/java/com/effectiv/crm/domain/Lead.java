@@ -2,6 +2,8 @@ package com.effectiv.crm.domain;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,6 +11,7 @@ import lombok.EqualsAndHashCode;
 @Table(name="T_LEAD")
 @Data
 @EqualsAndHashCode(callSuper=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Lead extends BaseEntity{
 	@Column(name="FIRST_NAME", nullable=true)
 	private String firstName;

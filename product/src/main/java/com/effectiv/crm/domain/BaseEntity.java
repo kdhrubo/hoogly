@@ -3,8 +3,6 @@ package com.effectiv.crm.domain;
 import java.util.*;
 import javax.persistence.*;
 import javax.persistence.Id;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.GenericGenerator;
 
 import org.springframework.data.annotation.*;
@@ -24,9 +22,6 @@ public class BaseEntity {
 	@Column(name = "ID", length = 40)
 	private String id;
 
-	@Transient
-	private String _csrf;
-	
 	@Column(name = "DELETED")
 	private boolean deleted;
 
