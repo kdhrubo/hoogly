@@ -16,6 +16,7 @@ import lombok.Data;
 
 @Data
 @MappedSuperclass
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BaseEntity {
 	
 	@Id
