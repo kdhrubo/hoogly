@@ -53,7 +53,7 @@ public class AccountControllerTests extends AbstractControllerTests<Account,Stri
 		mockMvc.perform(get(BASE_URL + "/hb"))
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-		.andDo(print()).andDo(document("cheak-lead-heartbeat"));
+		.andDo(print()).andDo(document("cheak-account-heartbeat"));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class AccountControllerTests extends AbstractControllerTests<Account,Stri
 		account.setAnnualRevenue(50000.00D);
 		account.setCompany("EFFECTIV");
 		account.setDeleted(false);
-		account.setDescription("Unit - test - entity :: Lead");
+		account.setDescription("Unit - test - entity :: Account");
 		account.setDesignation("Project Manager");
 		account.setEmail("effectvlead@effectiv.com");
 		account.setEmailOptOut(false);
@@ -74,7 +74,7 @@ public class AccountControllerTests extends AbstractControllerTests<Account,Stri
 			
 			mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON_UTF8).content(json(account)))
 			.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-			.andExpect(jsonPath("$.id", is("1"))).andDo(print()).andDo(document("create-lead"));
+			.andExpect(jsonPath("$.id", is("1"))).andDo(print()).andDo(document("create-account"));
 			
 			// verify
 			verify(accountBusinessDelegate, times(1)).save(account);
@@ -86,59 +86,18 @@ public class AccountControllerTests extends AbstractControllerTests<Account,Stri
 		
 	List<Account> accountlists=new ArrayList<Account>();
 	Account acc=new Account();
-	acc.setId("1");
-	accountlists.add(acc);
-	
-/*	for(int i=0;i<9;i++)
+	int id=1;
+	for(int i=0;i<10;i++)
 	{
-		int id=2;
-		acc=new Account();
 		acc.setId(Integer.toString(id));
 		accountlists.add(acc);
 		id +=1;
+		acc=new Account();
 		
-	}*/
-	
-	acc=new Account();
-	acc.setId("2");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("3");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("4");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("5");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("6");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("7");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("8");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("9");
-	accountlists.add(acc);
-	
-	acc=new Account();
-	acc.setId("10");
-	accountlists.add(acc);
-	
+	}
 	// mock
 			when(accountBusinessDelegate.findAll(any(SearchRequest.class), any(Pageable.class)))
 				.thenReturn(new PageImpl<>(accountlists));
-	
 			mockMvc.perform(get(BASE_URL)
 					.param("page", "1")
 					.param("size", "10")
@@ -153,6 +112,7 @@ public class AccountControllerTests extends AbstractControllerTests<Account,Stri
 			.andExpect(jsonPath("$.content[0].id", is("1")))
 			.andExpect(jsonPath("$.content[1].id", is("2")))
 			.andExpect(jsonPath("$.content[2].id", is("3")))
+			.andExpect(jsonPath("$.content[9].id", is("10")))
 			.andDo(print())
 			.andDo(document("find-all-account"));
 			
