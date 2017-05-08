@@ -1,7 +1,16 @@
 package com.effectiv.crm.domain;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Entity
+@Table(name="T_Account")
+@Data
+@EqualsAndHashCode(callSuper=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends BaseEntity{
 	@Column(name="NAME", nullable=true)
 	private String name;
