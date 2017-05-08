@@ -4,7 +4,16 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Entity
+@Table(name="T_CONTACT")
+@Data
+@EqualsAndHashCode(callSuper=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Contact extends BaseEntity{
 	
 	@Column(name="SALUTATION_ID")
