@@ -53,7 +53,7 @@ public class CaseControllerTests extends AbstractControllerTests<Case,String>{
 		mockMvc.perform(get(BASE_URL + "/hb"))
 		.andExpect(status().isOk())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-		.andDo(print()).andDo(document("cheak-contact-heartbeat"));
+		.andDo(print()).andDo(document("cheak-case-heartbeat"));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class CaseControllerTests extends AbstractControllerTests<Case,String>{
 		casee.setTitle("1234567890");
 		casee.setStatusId("yes");
 		casee.setDeleted(false);
-		casee.setPrority("Unit - test - entity :: Contact");
+		casee.setPrority("Unit - test - entity :: Case");
 		casee.setContactId("888899999");
 		casee.setAssignedUser("effectvlead@effectiv.com");
 		casee.setPrimaryEmail("effectvlead@effectiv.com");
@@ -74,7 +74,7 @@ public class CaseControllerTests extends AbstractControllerTests<Case,String>{
 			
 			mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON_UTF8).content(json(casee)))
 			.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-			.andExpect(jsonPath("$.id", is("1"))).andDo(print()).andDo(document("create-account"));
+			.andExpect(jsonPath("$.id", is("1"))).andDo(print()).andDo(document("create-case"));
 			
 			// verify
 			verify(caseBusinessDelegate, times(1)).save(casee);
@@ -114,7 +114,7 @@ public class CaseControllerTests extends AbstractControllerTests<Case,String>{
 			.andExpect(jsonPath("$.content[2].id", is("3")))
 			.andExpect(jsonPath("$.content[9].id", is("10")))
 			.andDo(print())
-			.andDo(document("find-all-account"));
+			.andDo(document("find-all-case"));
 			
 			// verify
 			ArgumentCaptor<SearchRequest> searchRequest = ArgumentCaptor.forClass(SearchRequest.class);
@@ -153,7 +153,7 @@ public class CaseControllerTests extends AbstractControllerTests<Case,String>{
         .andExpect(jsonPath("$.primaryEmail", is("Rajiv")))
         .andExpect(jsonPath("$.channelId", is("1234567892")))
 		.andDo(print())
-		.andDo(document("find-one-contact"));
+		.andDo(document("find-one-case"));
 		
 		// verify
 		verify(caseBusinessDelegate, times(1)).findOne("1");
@@ -171,7 +171,7 @@ public class CaseControllerTests extends AbstractControllerTests<Case,String>{
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 		.andExpect(status().isOk())
 		.andDo(print())
-		.andDo(document("delete-one-contact"));
+		.andDo(document("delete-one-case"));
 		
 		// verify
 		verify(caseBusinessDelegate, times(1)).delete("1");
