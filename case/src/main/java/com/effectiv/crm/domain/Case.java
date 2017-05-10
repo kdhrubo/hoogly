@@ -2,11 +2,21 @@ package com.effectiv.crm.domain;
 
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name="T_CASE")
-class Case extends BaseEntity{
+@Data
+@EqualsAndHashCode(callSuper=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Case extends BaseEntity{
 
 
 	@Column(name="SUMMARY", nullable=false)
