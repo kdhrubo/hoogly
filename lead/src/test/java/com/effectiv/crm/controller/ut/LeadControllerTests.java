@@ -1,4 +1,4 @@
-package com.effectiv.crm.controller;
+package com.effectiv.crm.controller.ut;
 
 
 import static org.hamcrest.Matchers.is;

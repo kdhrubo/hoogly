@@ -1,4 +1,4 @@
-package com.effectiv.crm.business;
+package com.effectiv.crm.business.ut;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.effectiv.crm.business.LeadBusinessDelegate;
 import com.effectiv.crm.domain.Lead;
 import com.effectiv.crm.repository.LeadRepository;
 import com.effectiv.crm.web.SearchRequest;

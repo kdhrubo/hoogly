@@ -60,7 +60,10 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	@ResponseStatus(value = HttpStatus.FOUND)
 	@ResponseBody
 	public T findOne(@PathVariable("id") Id id) {
-		return service.findOne(id);
+		log.info("### retrieving lead with id - {}",id);
+		T t = service.findOne(id);
+		log.info("### retrieved lead - {}",t);
+		return t;
 	}
 	
 	
