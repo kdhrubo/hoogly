@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +13,7 @@ import lombok.EqualsAndHashCode;
 @Table(name="T_PRODUCT")
 @Data
 @EqualsAndHashCode(callSuper=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Product extends BaseEntity{
 	
 	@Column(name="NAME", nullable=true)
