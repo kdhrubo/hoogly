@@ -1,6 +1,7 @@
 package com.effectiv.crm.repository.ut;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
+
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,8 +49,10 @@ public class LeadRepositoryTest {
 	public void findOne() {
 		
 		Lead persistedLead = this.repository.findOne("1");
-        assertEquals("1",persistedLead.getId());
-        assertEquals("Virat",persistedLead.getFirstName());
+        
+        assertThat(persistedLead.getId()).isEqualTo("1");
+        assertThat(persistedLead.getFirstName()).isEqualTo("Virat");
+        
 	}
 	
 	//@Test
@@ -72,14 +75,26 @@ public class LeadRepositoryTest {
 		
 	}
 	
-	//@Test
+	@Test
 	public void delete() {
+		Lead retrievedLead = this.repository.findOne("1");
 		
 	}
 	
 	@Test
 	public void update() {
+		Lead retrievedLead = this.repository.findOne("1");
 		
+		retrievedLead.setFirstName("Viraat");
+		retrievedLead.setLastName("Kohli");
+		retrievedLead.setAnnualRevenue(6000);
+		
+		Lead persistedLead = this.repository.save(retrievedLead);
+		
+		assertThat(persistedLead.getId()).isEqualTo(retrievedLead.getId()); //update must not change id
+		assertThat(persistedLead.getFirstName()).isEqualTo("Viraat"); 
+		assertThat(persistedLead.getLastName()).isEqualTo("Kohli"); 
+		assertThat(persistedLead.getAnnualRevenue()).isEqualTo(6000); 
 	}
 	
 	//@Test
