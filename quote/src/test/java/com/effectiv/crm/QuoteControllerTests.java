@@ -46,7 +46,7 @@ public class QuoteControllerTests extends AbstractControllerTests<Quote,String>{
 	
 	@MockBean
 	private QuoteBusinessDelegate quoteBusinessDelegate;
-	private final String BASE_URL = "/products";
+	private final String BASE_URL = "/quotes";
 	
 	@Test
 	public void testHeartBeat() throws Exception{
@@ -58,15 +58,18 @@ public class QuoteControllerTests extends AbstractControllerTests<Quote,String>{
 
 	@Test
 	public void testCreate() throws Exception {
-/*		Quote quote = new Quote();
-		quote.setCommissonRate(50000.00D);
+		Quote quote = new Quote();
+		
+		quote.setTitle("Quote page");
 		quote.setName("Rajiv-Product");
-		quote.setDeleted(false);
-		quote.setDescription("Unit - test - entity :: Product");
-		quote.setOwner("Project Manager");
-		quote.setManufacturer("effectvlead@effectiv.com");
-		quote.setTaxable(false);
+		quote.setModified_by_name("Rajiv-Product");
+		quote.setAssignedto("Rocky");
+		quote.setSubTotal(10000.54D);
+		quote.setDescription("Unit - test - entity :: Quote");
 		quote.setId("1");
+		quote.setTax(true);
+		quote.setShipping("Bangalore");
+		
 		
 		// mocking
 			when(quoteBusinessDelegate.save(any(Quote.class))).thenReturn(quote);
@@ -74,11 +77,11 @@ public class QuoteControllerTests extends AbstractControllerTests<Quote,String>{
 			
 			mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON_UTF8).content(json(quote)))
 			.andExpect(status().isCreated()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-			.andExpect(jsonPath("$.id", is("1"))).andDo(print()).andDo(document("create-product"));
+			.andExpect(jsonPath("$.id", is("1"))).andDo(print()).andDo(document("create-quote"));
 			
 			// verify
 			verify(quoteBusinessDelegate, times(1)).save(quote);
-			verifyNoMoreInteractions(quoteBusinessDelegate); */
+			verifyNoMoreInteractions(quoteBusinessDelegate); 
 	}
 	
 	@Test
@@ -137,13 +140,13 @@ public class QuoteControllerTests extends AbstractControllerTests<Quote,String>{
 	@Test
 	public void testFindOne() throws Exception {
 		
-		Quote product = new Quote();
-		product.setId("1");
-	//	product.setName("Rajiv");
-	//	product.setQtyOrdered(1234567892);
+		Quote quote = new Quote();
+		quote.setId("1");
+		quote.setName("Rajiv");
+		quote.setDiscount(1234567892D);
 		// mock
 		when(quoteBusinessDelegate.findOne(any(String.class)))
-			.thenReturn(product);
+			.thenReturn(quote);
 		
 		mockMvc.perform(get(BASE_URL + "/{id}","1")
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -151,9 +154,9 @@ public class QuoteControllerTests extends AbstractControllerTests<Quote,String>{
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 		.andExpect(jsonPath("$.id", is("1")))
         .andExpect(jsonPath("$.name", is("Rajiv")))
-        .andExpect(jsonPath("$.qtyOrdered", is(1234567892)))
+        .andExpect(jsonPath("$.discount", is(1234567892D)))
 		.andDo(print())
-		.andDo(document("find-one-product"));
+		.andDo(document("find-one-quote"));
 		
 		// verify
 		verify(quoteBusinessDelegate, times(1)).findOne("1");
@@ -190,7 +193,7 @@ public class QuoteControllerTests extends AbstractControllerTests<Quote,String>{
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 		.andExpect(status().isOk())
 		.andDo(print())
-		.andDo(document("purge-product"));
+		.andDo(document("purge-quote"));
 		
 		// verify
 		verify(quoteBusinessDelegate, times(1)).purge("1");
