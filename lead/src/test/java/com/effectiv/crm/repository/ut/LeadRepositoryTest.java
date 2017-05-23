@@ -1,7 +1,13 @@
 package com.effectiv.crm.repository.ut;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,14 +61,18 @@ public class LeadRepositoryTest {
         
 	}
 	
-	//@Test
+	@Test
 	public void findOneDoesNotExist() {
 		//TODO - Need to provide implementation
+		Lead noLeadEntry = this.repository.findOne("26");
+		assertNull(noLeadEntry);
 	}
 	
-	//@Test
+	@Test
 	public void findAll() {
-		
+		List<Lead> leadList = repository.findAll();
+		assertEquals(25, leadList.size());
+		assertEquals("Sachin", leadList.get(13).getFirstName());
 	}
 	
 	//@Test
@@ -70,15 +80,57 @@ public class LeadRepositoryTest {
 		
 	}
 	
-	//@Test
+	@Test
 	public void save() {
-		
+		Lead lead = new Lead();
+		lead.setAddress(null);
+		lead.setAnnualRevenue(50000.00D);
+		// TODO - set null now, to be changed after security audit
+		// implementation
+		// lead.setAssignedUser(arg0);
+		lead.setCompany("EFFECTIV");
+		lead.setDeleted(false);
+		lead.setDescription("Unit - test - entity :: Lead");
+		lead.setDesignation("Project Manager");
+		lead.setEmail("effectvlead@effectiv.com");
+		lead.setEmailOptOut(false);
+
+		Map<String, String> extension = new HashMap<String, String>();
+		extension.put("flex_field_string", "some value");
+		extension.put("flex_field_date", "02/20/2017");
+		extension.put("flex_field_number", "77");
+
+		lead.setExtensions(extension);
+
+		lead.setFacebook("effectiv");
+		lead.setFax("22445566");
+		lead.setFirstName("Effectiv");
+		lead.setLastName("Systems");
+		lead.setIndustry(null);
+		lead.setLeadSource(null);
+		lead.setLeadStatus(null);
+		lead.setMobile("1234567890");
+		lead.setNoOfEmployees(22);
+		lead.setPhone("9999988888");
+		lead.setRating(null);
+		lead.setSalutation(null);
+		lead.setTwitter("@effectiv");
+		lead.setWebsite("http://www.effectivcrm.com");
+
+		Lead savedLead = repository.save(lead);
+
+		assertNotNull(savedLead.getId());
+
 	}
 	
 	@Test
 	public void delete() {
-		Lead retrievedLead = this.repository.findOne("1");
-		
+		Lead retrievedLead = this.repository.findOne("11");
+		retrievedLead.setDeleted(true);
+		repository.save(retrievedLead);
+		retrievedLead=repository.findOne("11");
+	//	retrievedLead.getF
+	//	assertEquals(true, retrievedLead.getDeleted());
 	}
 	
 	@Test
@@ -97,8 +149,15 @@ public class LeadRepositoryTest {
 		assertThat(persistedLead.getAnnualRevenue()).isEqualTo(6000); 
 	}
 	
-	//@Test
+	@Test
 	public void purge() {
-		
+		Lead lead = repository.findOne("16");
+		assertNotNull(lead);
+		assertEquals(lead.getId(), "16");
+
+		repository.delete("16");
+
+		lead = repository.findOne("16");
+		assertNull(lead);
 	}
 }
