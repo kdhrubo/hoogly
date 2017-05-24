@@ -130,7 +130,7 @@ public class LeadRepositoryTest {
 		repository.save(retrievedLead);
 		retrievedLead=repository.findOne("11");
 	//	retrievedLead.getF
-	//	assertEquals(true, retrievedLead.getDeleted());
+	    assertEquals(true, retrievedLead.isDeleted());
 	}
 	
 	@Test
