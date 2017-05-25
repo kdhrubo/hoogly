@@ -76,8 +76,7 @@ public class LeadRepositoryTest {
 	}
 	
 	//@Test
-	public void findAllError() {
-		
+	public void findAllNotfound() {
 	}
 	
 	@Test
@@ -129,7 +128,6 @@ public class LeadRepositoryTest {
 		retrievedLead.setDeleted(true);
 		repository.save(retrievedLead);
 		retrievedLead=repository.findOne("11");
-	//	retrievedLead.getF
 	    assertEquals(true, retrievedLead.isDeleted());
 	}
 	
