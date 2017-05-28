@@ -187,7 +187,22 @@ public class LeadBusinessDelegateTest {
 
 	@Test
 	public void testRestore() {
-		//fail("Not yet implemented");
+		Lead lead = new Lead();
+		lead.setId("20");
+		when(leadRepository.findOne(any(String.class))).thenReturn(lead);
+		leadBusinessDelegate.delete("20");
+		verify(leadRepository, times(1)).findOne("20");
+		ArgumentCaptor<Lead> leadCaptor = ArgumentCaptor.forClass(Lead.class);
+		
+		verify(leadRepository, times(1)).findOne("20");
+		verify(leadRepository, times(1)).save(leadCaptor.capture());
+		
+		Lead deletedLead = leadCaptor.getValue();
+		assertThat(deletedLead.isDeleted()).isEqualTo(true);
+		leadBusinessDelegate.restore("20");
+		assertThat(deletedLead.isDeleted()).isEqualTo(false);
+		assertNotNull(deletedLead);
+		
 	}
 
 }
