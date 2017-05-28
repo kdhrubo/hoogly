@@ -1,7 +1,12 @@
 package com.effectiv.crm.business.ut;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+//import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -9,22 +14,38 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.effectiv.crm.business.LeadBusinessDelegate;
 import com.effectiv.crm.domain.Lead;
 import com.effectiv.crm.repository.LeadRepository;
 import com.effectiv.crm.web.SearchRequest;
 
+import static org.assertj.core.api.Assertions.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LeadBusinessDelegateTest {
 	private LeadBusinessDelegate leadBusinessDelegate;
+	
+	@Autowired
 	private LeadRepository leadRepository;
 
 	@Before
@@ -53,6 +74,13 @@ public class LeadBusinessDelegateTest {
 	@Test
 	public void findOneDoesNotExist() {
 		//TODO
+		when(leadRepository.findOne(any(String.class))).thenReturn(null);
+		Lead rl = leadBusinessDelegate.findOne("1");
+		
+		assertThat(rl).isNull();
+		
+		verify(leadRepository, times(1)).findOne("1");
+		verifyNoMoreInteractions(leadRepository);
 	}
 
 	@Test
@@ -111,13 +139,51 @@ public class LeadBusinessDelegateTest {
 
 	@Test
 	public void testDelete() {
-		//fail("Not yet implemented");
+		// mock
+				Lead lead = new Lead();
+				lead.setAnnualRevenue(50000.00D);
+				lead.setCompany("EFFECTIV");
+				lead.setDeleted(false);
+				lead.setDescription("Unit - test - entity :: Lead");
+				lead.setDesignation("Project Manager");
+				lead.setEmail("effectvlead@effectiv.com");
+				lead.setEmailOptOut(false);
+				lead.setId("1");
+				when(leadRepository.findOne(any(String.class))).thenReturn(lead);
+				leadBusinessDelegate.delete("1");
+				ArgumentCaptor<Lead> leadCaptor = ArgumentCaptor.forClass(Lead.class);
+				
+				verify(leadRepository, times(1)).findOne("1");
+				verify(leadRepository, times(1)).save(leadCaptor.capture());
+				
+				verifyNoMoreInteractions(leadRepository);
+				
+				Lead deletedLead = leadCaptor.getValue();
+				//check same lead
+				
+				assertThat(deletedLead.getId()).isEqualTo("1");
+				
+				//check if deleted flag is true
+				assertThat(deletedLead.isDeleted()).isEqualTo(true);
 	}
 
 	@Test
 	public void testPurge() {
-		//fail("Not yet implemented");
-	}
+		Lead lead = new Lead();
+		lead.setId("18");
+		when(leadRepository.findOne(any(String.class))).thenReturn(lead);
+		leadBusinessDelegate.delete("18");
+		verify(leadRepository, times(1)).findOne("18");
+		
+		ArgumentCaptor<Lead> leadCaptor = ArgumentCaptor.forClass(Lead.class);
+		
+		verify(leadRepository, times(1)).findOne("18");
+		verify(leadRepository, times(1)).save(leadCaptor.capture());
+		Lead deletedLead = leadCaptor.getValue();
+		assertThat(deletedLead.getId()).isEqualTo("18");
+		assertThat(deletedLead.isDeleted()).isEqualTo(true);
+		assertNotNull(deletedLead);
+}
 
 	@Test
 	public void testRestore() {
