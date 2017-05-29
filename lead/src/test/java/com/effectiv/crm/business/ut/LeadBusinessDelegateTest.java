@@ -1,9 +1,7 @@
 package com.effectiv.crm.business.ut;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-//import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -52,15 +50,17 @@ public class LeadBusinessDelegateTest {
 		when(leadRepository.findOne(any(String.class))).thenReturn(l);
 
 		Lead rl = leadBusinessDelegate.findOne("1");
-
-		assertEquals("1", rl.getId());
-		assertEquals("Virat", rl.getFirstName());
-		assertEquals("Kohli", rl.getLastName());
+		
+		assertThat(rl.getId()).isEqualTo("1");
+		assertThat(rl.getFirstName()).isEqualTo("Virat");
+		assertThat(rl.getLastName()).isEqualTo("Kohli");
+		
+		verify(leadRepository, times(1)).findOne("1");
+		verifyNoMoreInteractions(leadRepository);
 	}
 
 	@Test
 	public void findOneDoesNotExist() {
-		// TODO
 		when(leadRepository.findOne(any(String.class))).thenReturn(null);
 		Lead rl = leadBusinessDelegate.findOne("1");
 
@@ -71,7 +71,7 @@ public class LeadBusinessDelegateTest {
 	}
 
 	@Test
-	public void testFindAll() {
+	public void findAll() {
 		List<Lead> leads = new ArrayList<Lead>();
 		Lead l = new Lead();
 		l.setId("1");
@@ -94,23 +94,29 @@ public class LeadBusinessDelegateTest {
 		leads.add(l);
 
 		when(leadRepository.findAll(any(SearchRequest.class), any(Pageable.class))).thenReturn(new PageImpl<>(leads));
-
-		Page<Lead> rLeadPage = leadBusinessDelegate.findAll(new SearchRequest(), new PageRequest(1, 5));
-		assertEquals(5L, rLeadPage.getTotalElements());
-		assertEquals(1, rLeadPage.getTotalPages());
-
+		
+		SearchRequest sr = new SearchRequest();
+		PageRequest pr = new PageRequest(1, 5);
+		
+		Page<Lead> rLeadPage = leadBusinessDelegate.findAll(sr, pr);
+		assertThat(rLeadPage.getTotalElements()).isEqualTo(5L);
+		assertThat(rLeadPage.getTotalPages()).isEqualTo(1);
+		
 		List<Lead> rLeads = rLeadPage.getContent();
 		int counter = 1;
 		for (Lead ld : rLeads) {
-			assertEquals(counter + "", ld.getId());
+			assertThat(ld.getId()).isEqualTo(counter + "");
 			counter++;
 		}
+		
+		verify(leadRepository, times(1)).findAll(sr,pr);
+		verifyNoMoreInteractions(leadRepository);
 	}
 
 	@Test
-	public void testSave() {
+	public void save() {
 		Lead lead = new Lead();
-		lead.setAddress(null);
+		lead.setFirstName("Viraat");
 		lead.setAnnualRevenue(50000.00D);
 		lead.setCompany("EFFECTIV");
 		lead.setDeleted(false);
@@ -121,10 +127,20 @@ public class LeadBusinessDelegateTest {
 		lead.setId("1");
 		// mock
 		when(leadRepository.save(any(Lead.class))).thenReturn(lead);
+		Lead sLead = new Lead();
+		Lead rLead = leadBusinessDelegate.save(new Lead());
+		
+		//check id 
+		assertThat(rLead.getId()).isEqualTo("1");
+		assertThat(rLead.getFirstName()).isEqualTo("Viraat");
+		
+		verify(leadRepository, times(1)).save(sLead);
+		verifyNoMoreInteractions(leadRepository);
+		
 	}
 
 	@Test
-	public void testDelete() {
+	public void delete() {
 		// mock
 		Lead lead = new Lead();
 		lead.setAnnualRevenue(50000.00D);
@@ -154,29 +170,26 @@ public class LeadBusinessDelegateTest {
 	}
 
 	@Test
-	public void testPurge() {
-		Lead lead = new Lead();
-		lead.setId("18");
-		when(leadRepository.findOne(any(String.class))).thenReturn(lead);
-		leadBusinessDelegate.delete("18");
-		verify(leadRepository, times(1)).findOne("18");
-
-		ArgumentCaptor<Lead> leadCaptor = ArgumentCaptor.forClass(Lead.class);
-
-		verify(leadRepository, times(1)).findOne("18");
-		verify(leadRepository, times(1)).save(leadCaptor.capture());
-		Lead deletedLead = leadCaptor.getValue();
-		assertThat(deletedLead.getId()).isEqualTo("18");
-		assertThat(deletedLead.isDeleted()).isEqualTo(true);
-		assertNotNull(deletedLead);
+	public void purge() {
+		
+		doNothing().when(leadRepository).delete(any(String.class));
+		leadBusinessDelegate.purge("18");
+		ArgumentCaptor<String> leadIdCaptor = ArgumentCaptor.forClass(String.class);
+		
+		verify(leadRepository, times(1)).delete(leadIdCaptor.capture());
+		verifyNoMoreInteractions(leadRepository);
+		assertThat(leadIdCaptor.getValue()).isEqualTo("18");
 	}
 
 	@Test
-	public void testRestore() {
+	public void restore() {
 		Lead lead = new Lead();
 		lead.setId("20");
+		lead.setDeleted(true);
+		
 		when(leadRepository.findOne(any(String.class))).thenReturn(lead);
-		leadBusinessDelegate.delete("20");
+		leadBusinessDelegate.restore("20");
+		
 		verify(leadRepository, times(1)).findOne("20");
 		ArgumentCaptor<Lead> leadCaptor = ArgumentCaptor.forClass(Lead.class);
 		
@@ -184,10 +197,14 @@ public class LeadBusinessDelegateTest {
 		verify(leadRepository, times(1)).save(leadCaptor.capture());
 		
 		Lead deletedLead = leadCaptor.getValue();
-		assertThat(deletedLead.isDeleted()).isEqualTo(true);
-		leadBusinessDelegate.restore("20");
-		assertThat(deletedLead.isDeleted()).isEqualTo(false);
-		assertNotNull(deletedLead);
+		// check same lead
+
+		assertThat(deletedLead.getId()).isEqualTo("20");
+		//restore means deleted = false, this the main test to check if the 
+		//flag was flipped before call to repository save
+		assertThat(deletedLead.isDeleted()).isEqualTo(false); 
+		
+		
 	}
 
 }
