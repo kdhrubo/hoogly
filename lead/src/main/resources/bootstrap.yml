@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: lead-service
+  cloud:
+    config:
+      uri: http://localhost:8888
+      label: develop
+server:
+  port: 8000
+  

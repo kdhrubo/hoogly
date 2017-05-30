@@ -32,6 +32,10 @@ public class BaseEntity {
 	private int version;
 
 	@ElementCollection
+	@CollectionTable(
+	        name="T_LEAD_EXTENSION",
+	        joinColumns=@JoinColumn(name="LEAD_ID")
+	  )
 	private Map<String, String> extensions = new HashMap<>();
 
 	@CreatedDate

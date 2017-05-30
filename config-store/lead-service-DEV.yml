@@ -1,3 +1,15 @@
-app:
-  sample:
-    message: HelloWorld
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/test
+    username: root
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    tomcat:
+      max-wait: 10000  
+      max-active: 20
+      test-on-borrow: true 
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_schema : lead_db
