@@ -103,7 +103,7 @@ public class LeadControllerIntegrationTests {
 	public void findOne() {
 		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
 		log.info("retrieved responseEntity- {}", responseEntity);
-		log.info("retrieved getBody- {}", responseEntity.getBody());
+		log.info("retrieved getBody- {} ", responseEntity.getBody());
 		Lead retrievedLead = responseEntity.getBody();
 		log.info("retrieved lead - {}", retrievedLead);
 		assertThat(HttpStatus.FOUND, equalTo( responseEntity.getStatusCode()));
