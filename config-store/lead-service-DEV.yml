@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/test
+    url: jdbc:mariadb://localhost:3306/lead_db
     username: root
     password: root
     driver-class-name: org.mariadb.jdbc.Driver
@@ -12,7 +12,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        default_schema : lead_db
+        #default_schema : lead_db
         
 flyway:
   enabled: true
