@@ -4,7 +4,11 @@ spring:
   cloud:
     config:
       uri: http://localhost:8888
-      label: develop
+      label: feature(_)15_lead_integ_test
 server:
   port: 8000
-  
+    
+flyway:
+  enabled: false
+
+    

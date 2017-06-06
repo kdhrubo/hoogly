@@ -1,8 +1,4 @@
-CREATE DATABASE IF NOT EXISTS lead_db;
-
-USE lead_db;
-
-CREATE OR REPLACE TABLE t_lead (
+CREATE TABLE t_lead (
 	id VARCHAR(40) NOT NULL,
 	created_by VARCHAR(255) NULL DEFAULT NULL,
 	created_date DATETIME NULL DEFAULT NULL,
@@ -42,7 +38,7 @@ CREATE OR REPLACE TABLE t_lead (
 );
 
 
-CREATE OR REPLACE TABLE t_lead_extension (
+CREATE TABLE t_lead_extension (
 	lead_id VARCHAR(40) NOT NULL,
 	extensions VARCHAR(255) NULL DEFAULT NULL,
 	extensions_key VARCHAR(255) NOT NULL,
