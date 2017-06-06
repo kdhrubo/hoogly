@@ -4,6 +4,8 @@ spring:
     username: root
     password: root
     driver-class-name: org.mariadb.jdbc.Driver
+    schema:
+    - lead_db
     tomcat:
       max-wait: 10000  
       max-active: 20
