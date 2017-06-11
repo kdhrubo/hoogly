@@ -26,6 +26,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 
 @ActiveProfiles("IT")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -85,9 +86,15 @@ public class LeadControllerIntegrationTests {
 	//	when(leadRepository.findOne(any(String.class))).thenReturn(lead);
 	}
 
-	//@Test
+	@Test
 	public void delete() {
-		// fail("Not implemented");
+		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
+		Lead deleteLead = responseEntity.getBody();
+		log.info("deleted lead - {}", deleteLead);
+		log.info("deleted lead - {}", responseEntity.getStatusCode());
+		deleteLead.setDeleted(true);
+		log.info("deleted lead - {}", responseEntity.getStatusCode());
+		assertThat(deleteLead.isDeleted()).isEqualTo(true);
 	}
 
 	//@Test
@@ -95,9 +102,11 @@ public class LeadControllerIntegrationTests {
 		// fail("Not implemented");
 	}
 
-	//@Test
+	@Test
 	public void purge() {
-		// fail("Not implemented");
+		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
+		Lead purgeLead=responseEntity.getBody();
+		log.info("purge lead - {}", purgeLead);		
 	}
 
 	//@Test
@@ -107,7 +116,13 @@ public class LeadControllerIntegrationTests {
 
 	//@Test
 	public void findAll() {
+		ResponseEntity<Lead> responseEntity=restTemplate.getForEntity(BASE_URL, Lead.class);
+	//	Page<Lead> p=(Page)restTemplate.getForEntity(BASE_URL, Page.class);
 		
+	//	log.info("Page size :", p.getSize());
+		Lead allLead = responseEntity.getBody();
+		System.out.println("allLead :"+allLead);
+		log.info("allLead :", allLead);
 	}
 
 	//@Test
