@@ -104,14 +104,22 @@ public class LeadControllerIntegrationTests {
 
 	@Test
 	public void purge() {
-		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
+		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1" + "/true", Lead.class);
 		Lead purgeLead=responseEntity.getBody();
 		log.info("purge lead - {}", purgeLead);		
+		assertThat(purgeLead.getId()).isNull();
 	}
 
-	//@Test
+	@Test
 	public void restore() {
-		// fail("Not implemented");
+		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/2", Lead.class);
+		Lead restoreLead = responseEntity.getBody();
+		log.info("restoreLead lead - {}", restoreLead);
+		log.info("restoreLead lead - {}", responseEntity.getStatusCode());
+		restoreLead.setDeleted(true);
+		assertThat(restoreLead.isDeleted()).isEqualTo(true);
+		restoreLead.setDeleted(false);
+		assertThat(restoreLead.isDeleted()).isEqualTo(false);
 	}
 
 	//@Test
