@@ -70,7 +70,7 @@ public abstract class AbstractBaseBusinessDelegate<T extends BaseEntity, Id exte
 	
 
 	@Transactional
-	public void restore(Id id) {
+	public T restore(Id id) {
 
 		T t = findOne(id);
 
@@ -87,7 +87,7 @@ public abstract class AbstractBaseBusinessDelegate<T extends BaseEntity, Id exte
 			throw new BusinessException("Entity cannot be deleted (soft delete) - " + e.getLocalizedMessage()
 					+ ". Check if deleted field is present.");
 		}
-		repository.save(t);
+		return repository.save(t);
 	}
 
 }

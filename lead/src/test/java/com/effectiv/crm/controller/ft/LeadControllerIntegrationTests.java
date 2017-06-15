@@ -1,9 +1,11 @@
 package com.effectiv.crm.controller.ft;
 
-
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.runner.RunWith;
 
@@ -12,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,7 +36,7 @@ import org.springframework.data.domain.Page;
 @RunWith(SpringRunner.class)
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
-	DbUnitTestExecutionListener.class })
+		DbUnitTestExecutionListener.class })
 @Slf4j
 @DatabaseSetup("classpath:/com/effectiv/crm/repository/ut/lead.xml")
 public class LeadControllerIntegrationTests {
@@ -41,11 +44,10 @@ public class LeadControllerIntegrationTests {
 	private TestRestTemplate restTemplate;
 
 	private final String BASE_URL = "/leads";
-	
 
-	@Test
+	//@Test
 	public void create() {
-		
+
 		Lead lead = new Lead();
 		lead.setFirstName("Jos");
 		lead.setLastName("Butler");
@@ -60,100 +62,95 @@ public class LeadControllerIntegrationTests {
 
 		ResponseEntity<Lead> responseEntity = restTemplate.postForEntity(BASE_URL, lead, Lead.class);
 		Lead createdLead = responseEntity.getBody();
-		
-		
+
 		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(createdLead.getId()).isNotNull();
 		assertThat(createdLead.getFirstName()).isEqualTo("Jos");
-		
-	}
 
-	@Test
-	public void findOne() {
-		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
-		log.info("retrieved responseEntity- {}", responseEntity);
-		log.info("retrieved getBody- {} ", responseEntity.getBody());
-		Lead retrievedLead = responseEntity.getBody();
-		log.info("retrieved lead - {}", retrievedLead);
-		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.FOUND.value());
-		assertThat(retrievedLead.getFirstName()).isEqualTo("Virat");
-		assertThat(retrievedLead.getId()).isNotNull();
 	}
 
 	//@Test
-	public void update() {
-		// fail("Not implemented");
-	//	when(leadRepository.findOne(any(String.class))).thenReturn(lead);
+	public void findOne() {
+		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
+
+		Lead retrievedLead = responseEntity.getBody();
+
+		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.FOUND.value());
+		assertThat(retrievedLead.getFirstName()).isEqualTo("Virat");
+		assertThat(retrievedLead.getId()).isNotNull();
+		assertThat(retrievedLead.getId()).isEqualTo("1");
 	}
 
-	@Test
+	// @Test
+	public void update() {
+		//use create or save as update, ensure that entity has ID
+	}
+
+	//@Test
 	public void delete() {
-		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
-		Lead deleteLead = responseEntity.getBody();
-		log.info("deleted lead - {}", deleteLead);
-		log.info("deleted lead - {}", responseEntity.getStatusCode());
-		deleteLead.setDeleted(true);
-		log.info("deleted lead - {}", responseEntity.getStatusCode());
-		assertThat(deleteLead.isDeleted()).isEqualTo(true);
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(BASE_URL + "/1", HttpMethod.DELETE, null,
+				Void.class);
+		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.GONE.value());
 	}
 
 	//@Test
 	public void deleteAll() {
-		// fail("Not implemented");
-	}
+		List<String> ids = Arrays.asList(new String[] { "1", "2", "3", "4" });
 
-	@Test
-	public void purge() {
-		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1" + "/true", Lead.class);
-		Lead purgeLead=responseEntity.getBody();
-		log.info("purge lead - {}", purgeLead);		
-		assertThat(purgeLead.getId()).isNull();
-	}
-
-	@Test
-	public void restore() {
-		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/2", Lead.class);
-		Lead restoreLead = responseEntity.getBody();
-		log.info("restoreLead lead - {}", restoreLead);
-		log.info("restoreLead lead - {}", responseEntity.getStatusCode());
-		restoreLead.setDeleted(true);
-		assertThat(restoreLead.isDeleted()).isEqualTo(true);
-		restoreLead.setDeleted(false);
-		assertThat(restoreLead.isDeleted()).isEqualTo(false);
+		for (String id : ids) {
+			ResponseEntity<Void> responseEntity = restTemplate.exchange(BASE_URL + "/" + id, HttpMethod.DELETE, null,
+					Void.class);
+			assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.GONE.value());
+		}
 	}
 
 	//@Test
+	public void purge() {
+		ResponseEntity<Void> responseEntity = restTemplate.exchange(BASE_URL + "/1?purge=true", HttpMethod.DELETE, null,
+				Void.class);
+		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.GONE.value());
+	}
+
+	//@Test
+	public void restore() {
+		ResponseEntity<Lead> responseEntity = restTemplate.exchange(BASE_URL + "/13/restore", HttpMethod.PUT, null,Lead.class);
+		Lead restoredLead = responseEntity.getBody();
+		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.OK.value());
+		assertThat(restoredLead.isDeleted()).isEqualTo(false);
+	}
+
+	 @Test
 	public void findAll() {
-		ResponseEntity<Lead> responseEntity=restTemplate.getForEntity(BASE_URL, Lead.class);
-	//	Page<Lead> p=(Page)restTemplate.getForEntity(BASE_URL, Page.class);
-		
-	//	log.info("Page size :", p.getSize());
+		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL, Lead.class);
+		// Page<Lead> p=(Page)restTemplate.getForEntity(BASE_URL, Page.class);
+
+		// log.info("Page size :", p.getSize());
 		Lead allLead = responseEntity.getBody();
-		System.out.println("allLead :"+allLead);
+		System.out.println("allLead :" + allLead);
 		log.info("allLead :", allLead);
 	}
 
-	//@Test
+	// @Test
 	public void copy() {
 		// fail("Not implemented");
 	}
 
-	//@Test
+	// @Test
 	public void findAllDeleted() {
 		// fail("Not implemented");
 	}
 
-	//@Test
+	// @Test
 	public void importAll() {
 		// fail("Not implemented");
 	}
 
-	//@Test
+	// @Test
 	public void exportAll() {
 		// fail("Not implemented");
 	}
 
-	//@Test
+	// @Test
 	public void convert() {
 		// fail("Not implemented");
 	}
