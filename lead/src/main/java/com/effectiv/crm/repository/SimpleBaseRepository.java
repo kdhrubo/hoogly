@@ -1,7 +1,6 @@
 package com.effectiv.crm.repository;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -38,18 +37,16 @@ public class SimpleBaseRepository<T, ID extends Serializable> extends SimpleJpaR
 	@Override
 	public Page<T> findAll(SearchRequest searchRequest, Pageable pageable) {
 		
-		log.info("Deleted : {}", false);
-		log.info("Entity name : {}", entityInformation.getEntityName());
 		
+		log.info("Entity name : {}", entityInformation.getEntityName());
 		
 		
 		List<T> content =  search(searchRequest,pageable);
 				
-				/*entityManager.createQuery("SELECT t from " + entityInformation.getEntityName() + " t where t.deleted =:deleted")
-				.setParameter("deleted", Boolean.FALSE)
-				.getResultList();*/
+		SimplePage<T> page = new SimplePage<T>();
+		page.setContent(content);
 		
-		return new PageImpl<>(content);
+		return page;
 	}
 	
 	protected List<T> search(SearchRequest searchRequest, Pageable pageable) {
@@ -66,15 +63,27 @@ public class SimpleBaseRepository<T, ID extends Serializable> extends SimpleJpaR
         Predicate predicate = builder.conjunction();
 
         for (final SearchCriteria param : searchRequest.getCriterias()) {
+        	
+        	
             if (param.getOperation().equalsIgnoreCase(">")) {
                 predicate = builder.and(predicate, builder.greaterThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
             } else if (param.getOperation().equalsIgnoreCase("<")) {
                 predicate = builder.and(predicate, builder.lessThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
             } else if (param.getOperation().equalsIgnoreCase(":")) {
+            	
+            log.info("### type --- {}", r.get(param.getKey()).getJavaType());
+            	
                 if (r.get(param.getKey()).getJavaType() == String.class) {
                     predicate = builder.and(predicate, builder.like(r.get(param.getKey()), "%" + param.getValue() + "%"));
-                } else {
-                	log.info("");
+                } 
+                else if (r.get(param.getKey()).getJavaType() == boolean.class) {
+                	log.info("Handling boolean parameter - {}", new Boolean((String)param.getValue()));
+                	
+                	predicate = builder.and(predicate, builder.equal(r.get(param.getKey()), new Boolean((String)param.getValue())) );
+                }
+                
+                else {
+                	
                     predicate = builder.and(predicate, builder.equal(r.get(param.getKey()), param.getValue()));
                 }
             }
@@ -85,5 +94,5 @@ public class SimpleBaseRepository<T, ID extends Serializable> extends SimpleJpaR
         return result;
 	}
 
-
+	
 }

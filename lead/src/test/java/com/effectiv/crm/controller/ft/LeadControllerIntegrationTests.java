@@ -25,11 +25,11 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.transaction.annotation.Transactional;
 
 import com.effectiv.crm.domain.Lead;
+import com.effectiv.crm.repository.SimplePage;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 
 @ActiveProfiles("IT")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -45,7 +45,7 @@ public class LeadControllerIntegrationTests {
 
 	private final String BASE_URL = "/leads";
 
-	//@Test
+	@Test
 	public void create() {
 
 		Lead lead = new Lead();
@@ -69,7 +69,7 @@ public class LeadControllerIntegrationTests {
 
 	}
 
-	//@Test
+	@Test
 	public void findOne() {
 		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL + "/1", Lead.class);
 
@@ -81,19 +81,19 @@ public class LeadControllerIntegrationTests {
 		assertThat(retrievedLead.getId()).isEqualTo("1");
 	}
 
-	// @Test
+	@Test
 	public void update() {
 		//use create or save as update, ensure that entity has ID
 	}
 
-	//@Test
+	@Test
 	public void delete() {
 		ResponseEntity<Void> responseEntity = restTemplate.exchange(BASE_URL + "/1", HttpMethod.DELETE, null,
 				Void.class);
 		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.GONE.value());
 	}
 
-	//@Test
+	@Test
 	public void deleteAll() {
 		List<String> ids = Arrays.asList(new String[] { "1", "2", "3", "4" });
 
@@ -104,14 +104,14 @@ public class LeadControllerIntegrationTests {
 		}
 	}
 
-	//@Test
+	@Test
 	public void purge() {
 		ResponseEntity<Void> responseEntity = restTemplate.exchange(BASE_URL + "/1?purge=true", HttpMethod.DELETE, null,
 				Void.class);
 		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.GONE.value());
 	}
 
-	//@Test
+	@Test
 	public void restore() {
 		ResponseEntity<Lead> responseEntity = restTemplate.exchange(BASE_URL + "/13/restore", HttpMethod.PUT, null,Lead.class);
 		Lead restoredLead = responseEntity.getBody();
@@ -119,15 +119,12 @@ public class LeadControllerIntegrationTests {
 		assertThat(restoredLead.isDeleted()).isEqualTo(false);
 	}
 
-	 @Test
+	@Test
 	public void findAll() {
-		ResponseEntity<Lead> responseEntity = restTemplate.getForEntity(BASE_URL, Lead.class);
-		// Page<Lead> p=(Page)restTemplate.getForEntity(BASE_URL, Page.class);
-
-		// log.info("Page size :", p.getSize());
-		Lead allLead = responseEntity.getBody();
-		System.out.println("allLead :" + allLead);
-		log.info("allLead :", allLead);
+		ResponseEntity<SimplePage> responseEntity = restTemplate.getForEntity(BASE_URL + "/search", SimplePage.class);
+		SimplePage allLeads = responseEntity.getBody();
+		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.FOUND.value());
+		assertThat(allLeads.getContent().size()).isEqualTo(12);
 	}
 
 	// @Test
@@ -135,9 +132,12 @@ public class LeadControllerIntegrationTests {
 		// fail("Not implemented");
 	}
 
-	// @Test
+	@Test
 	public void findAllDeleted() {
-		// fail("Not implemented");
+		ResponseEntity<SimplePage> responseEntity = restTemplate.getForEntity(BASE_URL + "/search?sc=deleted:true"  , SimplePage.class);
+		SimplePage allLeads = responseEntity.getBody();
+		assertThat(responseEntity.getStatusCode().value()).isEqualTo(HttpStatus.FOUND.value());
+		assertThat(allLeads.getContent().size()).isEqualTo(13);
 	}
 
 	// @Test

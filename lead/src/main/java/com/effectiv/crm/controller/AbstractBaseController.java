@@ -44,7 +44,7 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	}
 	
 	
-	@GetMapping()
+	@GetMapping("/search")
 	@ResponseStatus(value = HttpStatus.FOUND)
 	@ResponseBody
 	public Page<T> findAll(@SearchParams SearchRequest searchRequest, Pageable pageable) {
