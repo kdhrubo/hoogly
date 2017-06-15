@@ -18,10 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 public class SearchRequest implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	@Getter
+	private List<SearchCriteria> criterias;
 	
 	public SearchRequest() {
 		List<SearchCriteria> params = new ArrayList<SearchCriteria>();
-		params.add(new SearchCriteria("deleted","=","false"));
+		params.add(new SearchCriteria("deleted",":","false"));
 		this.criterias = params;
 	}
 	
@@ -30,12 +32,11 @@ public class SearchRequest implements Serializable{
 		this.criterias = criterias;
 	}
 
-	@Getter
-	private List<SearchCriteria> criterias;
+	
 	
 	/**
 	 * Specify search criteria like this
-	 * http://api.hoogly.io/leads?search=lastName:doe,age>25
+	 * http://api.hoogly.io/leads/search?sc=lastName:doe,age>25
 	 * @param request
 	 * @return
 	 */
@@ -43,7 +44,7 @@ public class SearchRequest implements Serializable{
 	public static SearchRequest getFromRequest(HttpServletRequest request) {
 		log.info("------- creating search request from servlet request ----");
 		
-		String search = request.getParameter("search");
+		String search = request.getParameter("sc");
 		
 		boolean deletedParamNotAvailable = true;
 		

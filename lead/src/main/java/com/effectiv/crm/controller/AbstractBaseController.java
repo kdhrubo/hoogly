@@ -44,7 +44,7 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	}
 	
 	
-	@GetMapping()
+	@GetMapping("/search")
 	@ResponseStatus(value = HttpStatus.FOUND)
 	@ResponseBody
 	public Page<T> findAll(@SearchParams SearchRequest searchRequest, Pageable pageable) {
@@ -68,7 +68,7 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	
 	
 	@DeleteMapping("/{id}")
-	@ResponseStatus(value = HttpStatus.OK)
+	@ResponseStatus(value = HttpStatus.GONE)
 	public void delete(@PathVariable("id") Id id, @RequestParam(value="purge", defaultValue="false") boolean purge) {
 		if(purge){
 			service.purge(id);
@@ -81,9 +81,9 @@ public abstract class AbstractBaseController<T extends BaseEntity, Id extends Se
 	@PutMapping("/{id}/restore")
 	@ResponseStatus(value = HttpStatus.OK)
 	@ResponseBody
-	public void restore(@PathVariable("id") Id id) {
+	public T restore(@PathVariable("id") Id id) {
 		log.info("==== restore entity called ====");
-		service.restore(id);
+		return service.restore(id);
 	}
 
 }
